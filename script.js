@@ -63,7 +63,7 @@ function updateTotalViews() {
 function sendViewToServer(test) {
     const currentCount = parseInt(localStorage.getItem(`view-count-${test}`)) || 0;
     
-    fetch('php/update_views.php', {
+    fetch('update_views.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -81,7 +81,7 @@ function sendViewToServer(test) {
 
 // Load view counts from server on page load (optional)
 function loadViewCountsFromServer() {
-    fetch('php/get_views.php')
+    fetch('get_views.php')
     .then(response => response.json())
     .then(data => {
         if (data.success) {
@@ -96,4 +96,5 @@ function loadViewCountsFromServer() {
     .catch(error => {
         console.error('Error loading view counts from server:', error);
     });
+
 }
