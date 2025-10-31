@@ -1,7 +1,7 @@
 // View counting system using localStorage (persistent)
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize view counts for each test
-    const tests = ['math-basic', 'science-advanced', 'english-proficiency', 'gk'];
+    const tests = ['math-basic', 'science-advanced', 'english-proficiency'];
     
     // Start with 25,000 base views (distributed among tests)
     const baseViews = 25000;
@@ -76,14 +76,17 @@ function updateViewCount(test, count) {
 
 function updateTotalViews() {
     let total = 0;
-    const tests = ['math-basic', 'science-advanced', 'english-proficiency', 'gk'];
+    const tests = ['math-basic', 'science-advanced', 'english-proficiency'];
     
     tests.forEach(test => {
         const count = parseInt(localStorage.getItem(`view-count-${test}`)) || 0;
         total += count;
     });
     
-    document.getElementById('total-views').textContent = formatNumber(total);
+    const totalViewsElement = document.getElementById('total-views');
+    if (totalViewsElement) {
+        totalViewsElement.textContent = formatNumber(total);
+    }
 }
 
 function formatNumber(num) {
@@ -94,7 +97,7 @@ function simulateNaturalGrowth() {
     // Add random views periodically to simulate organic traffic
     setInterval(() => {
         if (Math.random() < 0.4) { // 40% chance every interval
-            const tests = ['math-basic', 'science-advanced', 'english-proficiency', 'gk'];
+            const tests = ['math-basic', 'science-advanced', 'english-proficiency'];
             const randomTest = tests[Math.floor(Math.random() * tests.length)];
             
             const currentCount = parseInt(localStorage.getItem(`view-count-${randomTest}`)) || 0;
@@ -108,7 +111,7 @@ function simulateNaturalGrowth() {
     // Larger random boosts occasionally
     setInterval(() => {
         if (Math.random() < 0.2) { // 20% chance
-            const tests = ['math-basic', 'science-advanced', 'english-proficiency', 'gk'];
+            const tests = ['math-basic', 'science-advanced', 'english-proficiency'];
             const randomTest = tests[Math.floor(Math.random() * tests.length)];
             
             const currentCount = parseInt(localStorage.getItem(`view-count-${randomTest}`)) || 0;
@@ -121,10 +124,35 @@ function simulateNaturalGrowth() {
     }, 120000); // Check every 2 minutes
 }
 
+// Make sure all test links have proper data-test attributes
+document.addEventListener('DOMContentLoaded', function() {
+    // Fix data-test attributes for all test links
+    const testLinks = document.querySelectorAll('.test-link');
+    
+    testLinks.forEach((link, index) => {
+        // Assign appropriate test types based on content
+        const linkText = link.closest('.link-item').querySelector('.link-title').textContent;
+        
+        if (linkText.includes('Pre Medical')) {
+            link.setAttribute('data-test', 'math-basic');
+        } else if (linkText.includes('Pre Engineering')) {
+            link.setAttribute('data-test', 'science-advanced');
+        } else {
+            link.setAttribute('data-test', 'english-proficiency');
+        }
+        
+        // Update corresponding view count elements
+        const viewCountElement = link.closest('.link-meta').querySelector('.view-count');
+        if (viewCountElement) {
+            viewCountElement.setAttribute('data-test', link.getAttribute('data-test'));
+        }
+    });
+});
+
 // Reset functionality (for testing purposes - remove in production)
 function resetViewCounts() {
     if (confirm('Are you sure you want to reset all view counts?')) {
-        const tests = ['math-basic', 'science-advanced', 'english-proficiency', 'gk'];
+        const tests = ['math-basic', 'science-advanced', 'english-proficiency'];
         const viewsPerTest = Math.floor(25000 / tests.length);
         
         tests.forEach(test => {
@@ -139,3 +167,8 @@ function resetViewCounts() {
 
 // Make reset function available globally for testing
 window.resetViewCounts = resetViewCounts;
+
+// Initialize everything when page loads
+window.addEventListener('load', function() {
+    updateTotalViews();
+});
